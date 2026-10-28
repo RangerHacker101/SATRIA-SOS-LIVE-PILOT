@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SATRIA-SOS Live Cyber Map</title>
+<style>
+:root{--bg:#060b08;--pn:#0c140f;--ln:#1d2c21;--tx:#d8e6d4;--mu:#7d9484;--lv:#2dd4bf;--at:#ff4d3d;--am:#f5b73b;--br:#b8892b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 system-ui,"Segoe UI",Roboto,sans-serif}
+header{background:#0a110c;border-bottom:2px solid var(--br)}
+.hw{max-width:1280px;margin:0 auto;padding:10px 16px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.lg{display:flex;gap:10px;align-items:center}.lg svg{width:36px;height:36px}
+h1{margin:0;font-size:19px;letter-spacing:.08em}.sb{font-size:11px;color:var(--mu)}
+.rt{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{display:flex;align-items:center;gap:7px;border:1px solid var(--ln);padding:4px 11px;border-radius:99px;font-size:12.5px;font-variant-numeric:tabular-nums;background:var(--pn)}
+.dot{width:9px;height:9px;border-radius:50%;background:#58665c}
+.pill.lv .dot{background:var(--lv);animation:pl 1.8s infinite}.pill.er .dot{background:var(--at)}.pill.sm .dot{background:var(--am);animation:pl2 1.4s infinite}
+@keyframes pl{70%{box-shadow:0 0 0 9px rgba(45,212,191,0)}0%{box-shadow:0 0 0 0 rgba(45,212,191,.7)}}
+@keyframes pl2{70%{box-shadow:0 0 0 9px rgba(245,183,59,0)}0%{box-shadow:0 0 0 0 rgba(245,183,59,.7)}}
+@media(prefers-reduced-motion:reduce){.dot{animation:none!important}}
+.tabs button{background:var(--pn);border:1px solid var(--ln);color:var(--mu);padding:6px 16px;font:inherit;font-weight:600;cursor:pointer;letter-spacing:.05em}
+.tabs button:first-child{border-radius:5px 0 0 5px}.tabs button:last-child{border-radius:0 5px 5px 0}
+.tabs button.on{color:#fff;background:#1c3a2c;border-color:var(--lv)}.tabs button.on.s{background:#4a3410;border-color:var(--am)}
+main{max-width:1280px;margin:0 auto;padding:12px 16px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center}
+input,select,.btn{font:inherit;padding:7px 10px;border:1px solid var(--ln);border-radius:5px;background:#0f1a13;color:var(--tx)}
+input[type=text],input:not([type]){flex:1;min-width:180px}
+.btn{cursor:pointer;background:#1c3a2c;border-color:#2c5a43;color:#fff}.btn.g{background:#0f1a13;border-color:var(--ln);color:var(--tx)}.btn:disabled{opacity:.4;cursor:default}
+:focus-visible{outline:3px solid var(--am);outline-offset:1px}
+.hid{display:none!important}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:10px}
+.k{background:var(--pn);border:1px solid var(--ln);border-left:3px solid var(--lv);padding:8px 11px;border-radius:4px}
+.k b{display:block;font-size:24px;line-height:1.1;font-variant-numeric:tabular-nums}.k span{font-size:11.5px;color:var(--mu)}
+.k.r{border-left-color:var(--at)}.k.o{border-left-color:var(--am)}
+.gr{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(300px,1fr);gap:10px}
+@media(max-width:900px){.gr{grid-template-columns:1fr}}
+.cd{background:var(--pn);border:1px solid var(--ln);border-radius:5px}
+.mw{position:relative;background:#050a07;border-radius:5px}
+canvas{display:block;width:100%}
+.bn{position:absolute;left:10px;top:8px;font-size:12px;font-weight:700;letter-spacing:.06em;padding:3px 9px;border-radius:3px;background:rgba(5,10,7,.8);border:1px solid var(--lv);color:var(--lv)}
+.bn.s{border-color:var(--am);color:var(--am)}
+.fsb{position:absolute;right:8px;top:6px;padding:3px 9px;font-size:12px}
+.hl{position:absolute;left:10px;right:10px;bottom:8px;font-size:12.5px;background:rgba(5,10,7,.82);border-left:3px solid var(--lv);padding:4px 9px;min-height:26px}
+.fh{padding:9px 12px;border-bottom:1px solid var(--ln);font-weight:600;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.fd{max-height:560px;overflow:auto;padding:8px}
+.it{border:1px solid var(--ln);border-left:4px solid var(--ln);border-radius:4px;padding:7px 10px;margin-bottom:7px;background:#0a120d}
+.it.TINGGI{border-left-color:var(--at)}.it.SEDANG{border-left-color:var(--am)}
+.it h3{margin:0 0 2px;font-size:13.5px;font-weight:600}.it a{color:#8fd0ff}
+.mt{font-size:11.5px;color:var(--mu)}
+.tg{display:inline-block;font-size:11px;font-weight:700;padding:0 6px;border-radius:3px;margin-right:5px;border:1px solid var(--ln)}
+.tg.TINGGI{color:var(--at);border-color:var(--at)}.tg.SEDANG{color:var(--am);border-color:var(--am)}
+.fc{color:var(--am);font-weight:700;font-size:11px}
+.rv button{font:inherit;font-size:11px;padding:2px 7px;margin:5px 3px 0 0;border:1px solid var(--ln);background:#0f1a13;color:var(--tx);border-radius:3px;cursor:pointer}
+.rv button.sel{background:#2c5a43;border-color:var(--lv);color:#fff}
+.nt{font-size:12px;color:var(--mu);border:1px solid var(--ln);background:var(--pn);padding:9px 12px;border-radius:5px;margin-top:10px}
+.em{padding:24px;text-align:center;color:var(--mu)}
+@media print{.bar,.rv,.tabs,.pill,.fsb{display:none!important}body{background:#fff;color:#000}.cd,.k,.it{background:#fff;border-color:#999}.fd{max-height:none}}
+</style>
+</head>
+<body>
+<header><div class="hw">
+<div class="lg"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2 36 8v12c0 9-7 15-16 18C11 35 4 29 4 20V8z" fill="none" stroke="#b8892b" stroke-width="2.4"/><circle cx="20" cy="19" r="6" fill="none" stroke="#d8e6d4" stroke-width="2"/><path d="M20 8v5M20 25v5M9 19h5M26 19h5" stroke="#d8e6d4" stroke-width="2"/></svg><div><h1>SATRIA-SOS</h1><div class="sb">Pusat Pemantauan Siber Sosial | Live Cyber Map</div></div></div>
+<div class="rt"><div class="tabs"><button id="tl" class="on">LIVE</button><button id="ts" class="s">SIMULASI</button></div><div class="pill" id="cl">--:--:-- WIB</div><div class="pill" id="lp"><span class="dot"></span><span id="lt">Belum terhubung</span></div></div>
+</div></header>
+<main>
+<div class="bar" id="bl">
+<select id="sc" aria-label="Cakupan"><option value="gl">Global: berita siber (Inggris)</option><option value="id">Indonesia: berita siber (Indonesia)</option></select>
+<input id="q" aria-label="Kata kunci">
+<select id="sp" aria-label="Rentang"><option value="24h">24 jam</option><option value="3d">3 hari</option><option value="7d">7 hari</option></select>
+<button class="btn" id="go">Perbarui data</button>
+<label class="mt"><input type="checkbox" id="au"> Otomatis 15 menit</label><span class="mt" id="cdn"></span>
+</div>
+<div class="bar hid" id="bs">
+<button class="btn" id="ru">Mulai simulasi</button><button class="btn g" id="rs">Reset</button>
+<label class="mt">Kecepatan <select id="spd"><option value="1">1x</option><option value="2">2x</option><option value="4">4x</option></select></label>
+<span class="mt">Mode latihan: tetapkan status tinjauan pada tiap peristiwa fiktif di panel kanan.</span>
+</div>
+<div class="kp">
+<div class="k"><b id="k1">-</b><span>Total peristiwa</span></div>
+<div class="k r"><b id="k2">-</b><span>Prioritas tinggi</span></div>
+<div class="k o"><b id="k3">-</b><span>Prioritas sedang</span></div>
+<div class="k"><b id="k4">-</b><span>Negara sumber/asal</span></div>
+<div class="k"><b id="k5">-</b><span>Median jeda indeks</span></div>
+<div class="k"><b id="k6">-</b><span>Konektor berhasil / gagal</span></div>
+</div>
+<div class="gr">
+<div class="cd mw" id="mw"><canvas id="mp" aria-label="Peta aktivitas"></canvas><div class="bn" id="bn"></div><button class="btn g fsb" id="fs">Layar penuh</button><div class="hl" id="hl">Menunggu data...</div></div>
+<div class="cd"><div class="fh"><span id="ft">Antrean tinjauan</span><span><select id="fl" aria-label="Prioritas"><option value="">Semua</option><option>TINGGI</option><option>SEDANG</option><option>RENDAH</option></select> <button class="btn g" id="ex" disabled>JSON</button> <button class="btn g" id="pr" disabled>Cetak</button></span></div><div class="fd" id="fd"><div class="em">Tekan <b>Perbarui data</b> untuk mengambil berita siber aktual.</div></div></div>
+</div>
+<div class="nt" id="nt"></div>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const HUB=[110,-7];
+const CEN={"United States":[-98,39],"Indonesia":[113,-2],"China":[104,35],"Russia":[100,60],"India":[78,22],"United Kingdom":[-2,54],"Germany":[10,51],"France":[2,46],"Japan":[138,36],"Australia":[134,-25],"Brazil":[-52,-10],"Canada":[-100,58],"Singapore":[104,1.3],"Malaysia":[102,4],"South Korea":[128,36],"Israel":[35,31],"Iran":[53,32],"Ukraine":[31,49],"Turkey":[35,39],"Pakistan":[70,30],"Nigeria":[8,9],"South Africa":[25,-29],"Netherlands":[5,52],"Italy":[12,42],"Spain":[-4,40],"Philippines":[122,12],"Vietnam":[106,16],"Thailand":[101,15],"Mexico":[-102,23],"Egypt":[30,27],"Saudi Arabia":[45,24],"United Arab Emirates":[54,24],"Ireland":[-8,53],"New Zealand":[172,-41],"Hong Kong":[114,22],"Taiwan":[121,24],"Bangladesh":[90,24],"Kenya":[38,0]};
+const POLY=[[[-168,66],[-140,70],[-95,72],[-80,68],[-62,60],[-55,50],[-67,44],[-76,35],[-81,25],[-97,26],[-105,20],[-95,16],[-85,10],[-78,8],[-90,15],[-110,24],[-118,33],[-125,42],[-125,50],[-140,60],[-165,60]],[[-55,60],[-45,60],[-20,70],[-20,82],[-60,82],[-70,76]],[[-78,8],[-60,10],[-50,0],[-35,-6],[-40,-22],[-55,-35],[-65,-42],[-68,-54],[-74,-50],[-72,-30],[-80,-5]],[[-10,36],[-9,43],[-2,48],[5,52],[10,58],[20,70],[40,68],[70,73],[110,77],[150,72],[180,68],[170,60],[140,52],[130,42],[122,30],[110,20],[105,10],[100,2],[98,15],[90,22],[80,10],[73,20],[67,25],[57,25],[50,30],[44,12],[35,30],[28,36],[20,38],[12,44],[3,43]],[[-17,21],[-10,35],[10,37],[32,31],[43,12],[51,11],[40,-5],[40,-15],[32,-28],[20,-35],[12,-18],[9,4],[-8,5],[-17,14]],[[95,5],[98,4],[106,-4],[105,-6],[100,-2]],[[105,-6],[114,-7],[114,-9],[106,-8]],[[109,2],[117,7],[119,1],[116,-4],[110,-3]],[[119,1],[125,1],[121,-5]],[[131,-1],[141,-3],[150,-10],[141,-9],[132,-4]],[[114,-22],[130,-12],[142,-11],[153,-26],[150,-37],[138,-35],[115,-34]],[[130,32],[135,34],[141,38],[142,44],[140,41],[135,36]],[[-5,50],[2,52],[-2,58],[-6,56]]];
+const RULES=[[/hoaks|hoax|disinformasi|misinformasi|berita palsu|deepfake|disinformation|misinformation|fake news/i,3,'Isu disinformasi'],[/peretas|retas|hacker|hacked|ransomware|kebocoran data|serangan siber|phishing|malware|cyberattack|cyber attack|data breach|ddos|zero-day/i,3,'Insiden siber'],[/provokasi|kerusuhan|ricuh|bentrok|makar|separatis|teror|terror|coup|riot/i,3,'Potensi gangguan keamanan'],[/bencana|gempa|banjir|erupsi|tsunami|longsor|earthquake|flood|disaster/i,2,'Krisis atau bencana'],[/viral|beredar|klaim|claims?\b/i,1,'Klaim beredar']];
+const triage=t=>{let s=0,r=[];for(const[x,w,l]of RULES)if(x.test(t)){s+=w;r.push(l)}return{s,r,p:s>=4?'TINGGI':s>=2?'SEDANG':'RENDAH'}};
+const SC={gl:{q:'(cyberattack OR ransomware OR "data breach" OR hacker)',l:'english'},id:{q:'(siber OR hoaks OR disinformasi OR peretas OR "kebocoran data")',l:'indonesian'}};
+const SIMO=['China','Russia','United States','Brazil','India','Germany','Iran','Ukraine','Turkey','Vietnam','Nigeria','South Korea','Netherlands','Pakistan'];
+const TYPES=['Pemindaian port','Percobaan brute force','Gelombang phishing','Lonjakan trafik (DDoS simulasi)','Eksploitasi kerentanan','Unggahan malware'];
+let mode='live',items=[],simEv=[],rev={},fetchedAt=null,busy=false,ok=0,bad=0,nextAt=0,run=false,fx=[],nextSim=0,nextPl=0,simN=0,W=0,H=0,base=null;
+try{rev=JSON.parse(localStorage.getItem('satria_rev')||'{}')}catch(e){}
+const saveRev=()=>{try{localStorage.setItem('satria_rev',JSON.stringify(rev))}catch(e){}};
+const tm=d=>d.toLocaleTimeString('id-ID',{timeZone:'Asia/Jakarta',hour12:false});
+const ago=ms=>{const m=Math.max(0,Math.round(ms/60000));return m<60?m+' mnt':m<2880?Math.round(m/60)+' jam':Math.round(m/1440)+' hari'};
+function pd(s){const m=/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/.exec(s||'');return m?new Date(Date.UTC(+m[1],m[2]-1,+m[3],+m[4],+m[5],+m[6])):null}
+const LA0=84,LA1=-58;
+const proj=([lo,la])=>[(lo+180)/360*W,(LA0-la)/(LA0-LA1)*H];
+function build(){
+  const cv=$('#mp'),d=window.devicePixelRatio||1;W=$('#mw').clientWidth;H=Math.round(W*(LA0-LA1)/360);
+  cv.width=W*d;cv.height=H*d;cv.style.height=H+'px';
+  const m=document.createElement('canvas');m.width=360;m.height=180;const mc=m.getContext('2d');mc.fillStyle='#000';
+  POLY.forEach(p=>{mc.beginPath();p.forEach(([lo,la],i)=>{i?mc.lineTo(lo+180,90-la):mc.moveTo(lo+180,90-la)});mc.closePath();mc.fill()});
+  const dt=mc.getImageData(0,0,360,180).data;
+  base=document.createElement('canvas');base.width=W*d;base.height=H*d;const b=base.getContext('2d');b.scale(d,d);
+  b.strokeStyle='#0f1d14';b.lineWidth=1;for(let x=0;x<=W;x+=W/12){b.beginPath();b.moveTo(x,0);b.lineTo(x,H);b.stroke()}for(let y=0;y<=H;y+=H/6){b.beginPath();b.moveTo(0,y);b.lineTo(W,y);b.stroke()}
+  const st=Math.max(4,Math.round(W/150));b.fillStyle='#2f5a40';
+  for(let y=st/2;y<H;y+=st)for(let x=st/2;x<W;x+=st){const lo=x/W*360,la=LA0-y/H*(LA0-LA1);if(dt[(Math.floor(90-la)*360+Math.floor(lo))*4+3]>0){b.beginPath();b.arc(x,y,st*.28,0,7);b.fill()}}
+}
+function pt(a,b,u){const d=Math.hypot(b[0]-a[0],b[1]-a[1]),cx=(a[0]+b[0])/2,cy=Math.min(a[1],b[1])-d*.28,v=1-u;return[v*v*a[0]+2*v*u*cx+u*u*b[0],v*v*a[1]+2*v*u*cy+u*u*b[1]]}
+function frame(now){
+  const cv=$('#mp'),c=cv.getContext('2d'),d=window.devicePixelRatio||1;
+  if(base){c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,cv.width,cv.height);c.drawImage(base,0,0);c.setTransform(d,0,0,d,0,0);
+  if(mode==='sim'&&run&&now>=nextSim)spawn(now);
+  if(mode==='live'&&items.length&&now>=nextPl){pulse();nextPl=now+1000}
+  if(mode==='live'){const cc={};items.forEach(i=>{if(CEN[i.country])cc[i.country]=(cc[i.country]||0)+1});c.fillStyle='rgba(45,212,191,.55)';for(const k in cc){const p=proj(CEN[k]);c.beginPath();c.arc(p[0],p[1],2+Math.min(6,cc[k]*.6),0,7);c.fill()}}
+  const hp=proj(HUB);c.strokeStyle='#f5b73b';c.lineWidth=1.5;c.beginPath();c.arc(hp[0],hp[1],4+1.5*Math.sin(now/300),0,7);c.stroke();c.fillStyle='#f5b73b';c.font='11px system-ui';c.fillText('SATRIA-SOS',hp[0]+9,hp[1]+4);
+  const nf=[];
+  for(const f of fx){const u=(now-f.t0)/f.dur;
+    if(f.k==='ring'){if(u>=1)continue;c.strokeStyle=f.col;c.globalAlpha=1-u;c.lineWidth=2;c.beginPath();c.arc(f.p[0],f.p[1],3+u*24,0,7);c.stroke();c.globalAlpha=1;nf.push(f)}
+    else{const e=Math.min(1,u),s=Math.max(0,e-.35);c.strokeStyle=f.col;c.lineWidth=2;c.globalAlpha=.9;c.beginPath();for(let i=0;i<=14;i++){const q=pt(f.a,f.b,s+(e-s)*i/14);i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1])}c.stroke();const h=pt(f.a,f.b,e);c.fillStyle=f.col;c.beginPath();c.arc(h[0],h[1],3,0,7);c.fill();c.globalAlpha=1;
+      if(u>=1)nf.push({k:'ring',p:f.b,t0:now,dur:900,col:f.col});else nf.push(f)}}
+  fx=nf.slice(-120)}
+  requestAnimationFrame(frame);
+}
+function pulse(){const i=items[Math.floor(Math.random()*items.length)];if(!i)return;const c=CEN[i.country];if(c)fx.push({k:'ring',p:proj(c),t0:performance.now(),dur:1500,col:'#2dd4bf'});
+  $('#hl').innerHTML='<b>'+esc(i.country||'negara tidak diketahui')+'</b> | '+esc(i.domain)+' | '+esc((i.title||'').slice(0,120))}
+function spawn(now){
+  const o=SIMO[Math.floor(Math.random()*SIMO.length)],ty=TYPES[Math.floor(Math.random()*TYPES.length)],r=Math.random(),p=r<.15?'TINGGI':r<.5?'SEDANG':'RENDAH';
+  const col=p==='TINGGI'?'#ff4d3d':p==='SEDANG'?'#f5b73b':'#6fbf8f';
+  fx.push({k:'arc',a:proj(CEN[o]),b:proj(HUB),t0:now,dur:1700,col});
+  simEv.unshift({id:'sim'+(++simN),title:ty+' dari '+o,domain:'FIKTIF',country:o,received:new Date().toISOString(),tri:{p,r:[ty],s:p==='TINGGI'?5:p==='SEDANG'?2:0},fict:true});
+  simEv=simEv.slice(0,60);$('#hl').innerHTML='<b>[SIMULASI FIKTIF]</b> '+esc(ty)+' dari '+esc(o)+' | '+p;
+  nextSim=now+(650+Math.random()*900)/(+$('#spd').value);stats();render();
+}
+const cur=()=>mode==='live'?items:simEv;
+function stats(){
+  const L=cur(),hi=L.filter(i=>i.tri.p==='TINGGI').length,md=L.filter(i=>i.tri.p==='SEDANG').length;
+  $('#k1').textContent=L.length;$('#k2').textContent=hi;$('#k3').textContent=md;$('#k4').textContent=new Set(L.map(i=>i.country).filter(Boolean)).size;
+  if(mode==='live'){const ds=items.filter(i=>i.seen).map(i=>fetchedAt-new Date(i.seen)).sort((a,b)=>a-b);$('#k5').textContent=ds.length?ago(ds[Math.floor(ds.length/2)]):'-';$('#k6').textContent=ok+' / '+bad}else{$('#k5').textContent='n/a';$('#k6').textContent='n/a'}
+}
+function render(){
+  const L=cur(),f=$('#fl').value,list=L.filter(i=>!f||i.tri.p===f).slice(0,80);
+  $('#ex').disabled=$('#pr').disabled=!L.length;
+  $('#ft').textContent=mode==='live'?'Antrean tinjauan (diurut prioritas)':'Peristiwa simulasi (FIKTIF)';
+  if(!list.length){$('#fd').innerHTML='<div class="em">'+(mode==='sim'?'Tekan <b>Mulai simulasi</b>.':L.length?'Tidak ada yang cocok dengan filter.':'Belum ada data.')+'</div>';return}
+  $('#fd').innerHTML=list.map(i=>{const k=i.url||i.id,st=rev[k]||'Belum diperiksa';
+   return '<div class="it '+i.tri.p+'"><h3>'+(i.url?'<a href="'+esc(i.url)+'" target="_blank" rel="noopener noreferrer">'+esc(i.title)+'</a>':esc(i.title))+'</h3><div class="mt"><span class="tg '+i.tri.p+'">'+i.tri.p+'</span>'+(i.fict?'<span class="fc">FIKTIF</span> ':esc(i.domain)+' | '+esc(i.country||'-')+' | terindeks '+(i.seen?new Date(i.seen).toLocaleString('id-ID'):'-')+' | ')+'diterima '+tm(new Date(i.received))+'</div><div class="mt">Alasan: '+(i.tri.r.length?esc(i.tri.r.join(', ')):'tidak ada indikator')+' | Status: <b>'+esc(st)+'</b></div><div class="rv" data-k="'+esc(k)+'">'+['Sedang diperiksa','Terverifikasi','Menyesatkan','Belum dapat disimpulkan'].map(s=>'<button class="'+(s===st?'sel':'')+'" data-s="'+s+'">'+s+'</button>').join('')+'</div></div>'}).join('');
+}
+$('#fd').addEventListener('click',e=>{const b=e.target.closest('.rv button');if(!b)return;rev[b.parentNode.dataset.k]=b.dataset.s;saveRev();render()});
+function lp(c,t){$('#lp').className='pill '+c;$('#lt').textContent=t}
+function setMode(m){
+  mode=m;$('#tl').classList.toggle('on',m==='live');$('#ts').classList.toggle('on',m==='sim');
+  $('#bl').classList.toggle('hid',m!=='live');$('#bs').classList.toggle('hid',m!=='sim');fx=[];
+  $('#bn').className='bn'+(m==='sim'?' s':'');
+  $('#bn').textContent=m==='live'?'LIVE | BERITA SIBER (titik = negara sumber berita)':'SIMULASI FIKTIF | BUKAN SERANGAN NYATA';
+  $('#nt').textContent=m==='live'?'Data nyata: indeks berita web GDELT DOC 2.0. Titik dan denyut pada peta menandai negara sumber berita, bukan lokasi serangan atau pelaku. Prioritas berbasis kata kunci hanya alat triase. Bukan feed seluruh media sosial dan bukan telemetri serangan real-time. Jika koneksi gagal, sistem menampilkan kegagalan, bukan data pengganti.':'Seluruh peristiwa di mode ini dibangkitkan acak oleh aplikasi untuk latihan alur kerja analis. Asal negara diacak dan tidak menunjuk pihak mana pun. Tidak ada serangan nyata dan tidak ada data nyata yang dipakai.';
+  if(m==='sim')lp('sm','SIMULASI FIKTIF');else lp(fetchedAt?'lv':bad?'er':'',fetchedAt?'LIVE':bad?'Gagal terhubung':'Belum terhubung');
+  $('#hl').textContent=m==='sim'?'Tekan Mulai simulasi.':(items.length?'':'Menunggu data...');stats();render();
+}
+$('#tl').onclick=()=>setMode('live');$('#ts').onclick=()=>setMode('sim');
+$('#ru').onclick=()=>{run=!run;$('#ru').textContent=run?'Jeda':'Mulai simulasi';nextSim=0};
+$('#rs').onclick=()=>{simEv=[];fx=[];simN=0;run=false;$('#ru').textContent='Mulai simulasi';stats();render()};
+$('#sc').onchange=()=>{$('#q').value=SC[$('#sc').value].q};$('#q').value=SC.gl.q;
+async function load(){
+  if(busy)return;busy=true;$('#go').disabled=true;lp('','Mengambil data...');
+  const url=(window.GDELT_BASE||'https://api.gdeltproject.org/api/v2/doc/doc')+'?query='+encodeURIComponent($('#q').value.trim()+' sourcelang:'+SC[$('#sc').value].l)+'&mode=artlist&format=json&maxrecords=75&sort=datedesc&timespan='+$('#sp').value;
+  const ac=new AbortController(),to=setTimeout(()=>ac.abort(),25000);
+  try{const r=await fetch(url,{signal:ac.signal});if(!r.ok)throw new Error('HTTP '+r.status);const tx=await r.text();let j;try{j=JSON.parse(tx)}catch(e){throw new Error('Respons bukan JSON: '+tx.slice(0,100))}
+    fetchedAt=new Date();ok++;
+    items=(j.articles||[]).map(a=>({title:a.title,url:a.url,domain:a.domain,country:a.sourcecountry,seen:(pd(a.seendate)||0)&&pd(a.seendate).toISOString(),received:fetchedAt.toISOString(),tri:triage(a.title||'')})).sort((a,b)=>b.tri.s-a.tri.s||(b.seen||'').localeCompare(a.seen||''));lp('lv','LIVE');
+  }catch(e){bad++;items=[];fetchedAt=null;lp('er','Gagal terhubung');$('#fd').innerHTML='<div class="em"><b>Koneksi ke GDELT gagal.</b><br>'+esc(e.name==='AbortError'?'Waktu tunggu habis (25 detik).':e.message)+'<br>Coba lagi beberapa detik kemudian. Aplikasi tidak menampilkan data pengganti.</div>';$('#hl').textContent='Tidak ada data live.'}
+  clearTimeout(to);busy=false;$('#go').disabled=false;if($('#au').checked)nextAt=Date.now()+9e5;stats();if(items.length)render();else{$('#ex').disabled=$('#pr').disabled=true}
+}
+$('#go').onclick=load;$('#fl').onchange=render;$('#q').addEventListener('keydown',e=>{if(e.key==='Enter')load()});
+$('#au').onchange=e=>{nextAt=e.target.checked?Date.now()+9e5:0};
+$('#pr').onclick=()=>window.print();
+$('#ex').onclick=()=>{const o={sistem:'SATRIA-SOS',mode,sumber:mode==='live'?'GDELT DOC 2.0':'SIMULASI FIKTIF',kueri:mode==='live'?$('#q').value:null,diambil_pada:fetchedAt&&fetchedAt.toISOString(),catatan:'Prioritas berbasis kata kunci untuk triase; status tinjauan ditetapkan petugas.',peristiwa:cur().map(i=>({...i,status_tinjauan:rev[i.url||i.id]||'Belum diperiksa'}))};
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(o,null,2)],{type:'application/json'}));a.download='satria-sos-'+mode+'-'+Date.now()+'.json';a.click()};
+$('#fs').onclick=()=>{const e=$('#mw');if(document.fullscreenElement)document.exitFullscreen();else if(e.requestFullscreen)e.requestFullscreen()};
+setInterval(()=>{$('#cl').textContent=tm(new Date())+' WIB';
+  if(mode==='live'&&fetchedAt)$('#lt').textContent='LIVE | sinkron '+ago(Date.now()-fetchedAt)+' lalu';
+  if($('#au').checked&&nextAt){const s=Math.max(0,Math.round((nextAt-Date.now())/1000));$('#cdn').textContent='berikutnya '+Math.floor(s/60)+':'+String(s%60).padStart(2,'0');if(!s&&!busy&&mode==='live')load()}else $('#cdn').textContent=''},1000);
+let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(build,200)});
+document.addEventListener('fullscreenchange',()=>setTimeout(build,150));
+build();setMode('live');requestAnimationFrame(frame);
+</script>
+</body>
+</html>
