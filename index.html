@@ -175,14 +175,19 @@ $('#tl').onclick=()=>setMode('live');$('#ts').onclick=()=>setMode('sim');
 $('#ru').onclick=()=>{run=!run;$('#ru').textContent=run?'Jeda':'Mulai simulasi';nextSim=0};
 $('#rs').onclick=()=>{simEv=[];fx=[];simN=0;run=false;$('#ru').textContent='Mulai simulasi';stats();render()};
 $('#sc').onchange=()=>{$('#q').value=SC[$('#sc').value].q};$('#q').value=SC.gl.q;
+function jsonp(u){return new Promise((res,rej)=>{const cb='gd'+Date.now(),s=document.createElement('script'),t=setTimeout(()=>{clean();rej(new Error('JSONP timeout'))},20000);function clean(){clearTimeout(t);delete window[cb];s.remove()}window[cb]=d=>{clean();res(d)};s.onerror=()=>{clean();rej(new Error('JSONP gagal dimuat'))};s.src=u.replace('format=json','format=jsonp')+'&callback='+cb;document.head.appendChild(s)})}
+async function getJson(u,sig){let err;
+  for(let i=0;i<2;i++){try{const r=await fetch(u,{signal:sig});if(!r.ok)throw new Error('HTTP '+r.status);const tx=await r.text();try{return JSON.parse(tx)}catch(e){throw new Error('Respons bukan JSON: '+tx.slice(0,100))}}catch(e){err=e;if(e.name==='AbortError')throw e;if(i<1)await new Promise(r=>setTimeout(r,6000))}}
+  if(window.GDELT_BASE)throw err;
+  try{return await jsonp(u)}catch(e){throw new Error(err.message+' | cadangan JSONP: '+e.message)}}
 async function load(){
   if(busy)return;busy=true;$('#go').disabled=true;lp('','Mengambil data...');
   const url=(window.GDELT_BASE||'https://api.gdeltproject.org/api/v2/doc/doc')+'?query='+encodeURIComponent($('#q').value.trim()+' sourcelang:'+SC[$('#sc').value].l)+'&mode=artlist&format=json&maxrecords=75&sort=datedesc&timespan='+$('#sp').value;
-  const ac=new AbortController(),to=setTimeout(()=>ac.abort(),25000);
-  try{const r=await fetch(url,{signal:ac.signal});if(!r.ok)throw new Error('HTTP '+r.status);const tx=await r.text();let j;try{j=JSON.parse(tx)}catch(e){throw new Error('Respons bukan JSON: '+tx.slice(0,100))}
+  const ac=new AbortController(),to=setTimeout(()=>ac.abort(),70000);
+  try{const j=await getJson(url,ac.signal);
     fetchedAt=new Date();ok++;
     items=(j.articles||[]).map(a=>({title:a.title,url:a.url,domain:a.domain,country:a.sourcecountry,seen:(pd(a.seendate)||0)&&pd(a.seendate).toISOString(),received:fetchedAt.toISOString(),tri:triage(a.title||'')})).sort((a,b)=>b.tri.s-a.tri.s||(b.seen||'').localeCompare(a.seen||''));lp('lv','LIVE');
-  }catch(e){bad++;items=[];fetchedAt=null;lp('er','Gagal terhubung');$('#fd').innerHTML='<div class="em"><b>Koneksi ke GDELT gagal.</b><br>'+esc(e.name==='AbortError'?'Waktu tunggu habis (25 detik).':e.message)+'<br>Coba lagi beberapa detik kemudian. Aplikasi tidak menampilkan data pengganti.</div>';$('#hl').textContent='Tidak ada data live.'}
+  }catch(e){bad++;items=[];fetchedAt=null;lp('er','Gagal terhubung');$('#fd').innerHTML='<div class="em"><b>Koneksi ke GDELT gagal.</b><br>'+esc(e.name==='AbortError'?'Waktu tunggu habis (70 detik).':e.message)+'<br>Coba lagi beberapa detik kemudian. Aplikasi tidak menampilkan data pengganti.</div>';$('#hl').textContent='Tidak ada data live.'}
   clearTimeout(to);busy=false;$('#go').disabled=false;if($('#au').checked)nextAt=Date.now()+9e5;stats();if(items.length)render();else{$('#ex').disabled=$('#pr').disabled=true}
 }
 $('#go').onclick=load;$('#fl').onchange=render;$('#q').addEventListener('keydown',e=>{if(e.key==='Enter')load()});
